@@ -1,0 +1,12 @@
+{
+  "name": "qr-code-scout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension for detecting QR codes on web pages",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0"
+  }
+}

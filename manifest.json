@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "二维码识别",
+  "version": "1.0.1",
+  "description": "识别网页和图片中的二维码，并快速打开其中的链接。",
+  "permissions": ["contextMenus", "activeTab", "scripting", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["jsQR.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "二维码识别"
+  }
+}
