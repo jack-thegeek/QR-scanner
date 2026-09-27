@@ -1,13 +1,19 @@
-const MENU_ID = "qr-scout-image";
+const IMAGE_MENU_ID = "qr-scout-image";
+const AREA_MENU_ID = "qr-scout-area";
 let menuSetup = Promise.resolve();
 
 function setupContextMenu() {
   menuSetup = menuSetup.then(async () => {
     await chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
-      id: MENU_ID,
-      title: "识别二维码",
-      contexts: ["all"]
+      id: IMAGE_MENU_ID,
+      title: "识别此图片中的二维码",
+      contexts: ["image"]
+    });
+    chrome.contextMenus.create({
+      id: AREA_MENU_ID,
+      title: "选取区域识别二维码",
+      contexts: ["page", "selection", "link", "video", "audio"]
     });
   });
   return menuSetup;
@@ -18,9 +24,9 @@ chrome.runtime.onStartup.addListener(setupContextMenu);
 setupContextMenu();
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (!tab?.id || info.menuItemId !== MENU_ID) return;
+  if (!tab?.id) return;
 
-  if (info.mediaType === "image" && info.srcUrl) {
+  if (info.menuItemId === IMAGE_MENU_ID && info.srcUrl) {
     try {
       await chrome.tabs.sendMessage(tab.id, {
         type: "QR_SCOUT_IMAGE",
@@ -29,7 +35,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     } catch {
       // Restricted pages do not allow content scripts.
     }
-  } else {
+  } else if (info.menuItemId === AREA_MENU_ID) {
     try {
       await chrome.tabs.sendMessage(tab.id, { type: "QR_SCOUT_SELECT" });
     } catch {
