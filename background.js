@@ -23,6 +23,17 @@ chrome.runtime.onInstalled.addListener(setupContextMenu);
 chrome.runtime.onStartup.addListener(setupContextMenu);
 setupContextMenu();
 
+async function startAreaSelection(tab) {
+  if (!tab?.id) return;
+  try {
+    await chrome.tabs.sendMessage(tab.id, { type: "QR_SCOUT_SELECT" });
+  } catch {
+    // Restricted pages do not allow content scripts.
+  }
+}
+
+chrome.action.onClicked.addListener(startAreaSelection);
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!tab?.id) return;
 
@@ -36,11 +47,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       // Restricted pages do not allow content scripts.
     }
   } else if (info.menuItemId === AREA_MENU_ID) {
-    try {
-      await chrome.tabs.sendMessage(tab.id, { type: "QR_SCOUT_SELECT" });
-    } catch {
-      // Restricted pages do not allow content scripts.
-    }
+    await startAreaSelection(tab);
   }
 });
 
